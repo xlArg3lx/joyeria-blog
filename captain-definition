@@ -3,8 +3,6 @@
   "dockerfileLines": [
     "FROM php:8.2-apache",
     "RUN apt-get update && apt-get install -y libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip opcache",
-    "RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs",
-
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
 
     "# Ajustes de configuración para Apache y PHP",
@@ -21,8 +19,6 @@
     "RUN git config --global --add safe.directory /var/www/html",
 
     "RUN composer install --no-dev --optimize-autoloader",
-
-    "RUN npm install && npm run build",
 
     "# Configuración correcta de permisos",
     "RUN chown -R www-data:www-data /var/www/html",
