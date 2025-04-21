@@ -11,6 +11,7 @@ php artisan view:cache
 
 # Corregir permisos de almacenamiento
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Desactivar el modo de mantenimiento
 # php artisan up --no-interaction
