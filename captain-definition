@@ -3,6 +3,11 @@
   "dockerfileLines": [
     "FROM php:8.2-apache",
 
+    "# FIX: Actualiza repositorios y claves GPG primero",
+    "RUN apt-get update && apt-get install -y ca-certificates gnupg",
+    "RUN apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com",
+    "RUN rm -rf /var/lib/apt/lists/*",
+
     "# Instala Node.js 18.x y npm",
     "RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -",
     "RUN apt-get install -y nodejs",
