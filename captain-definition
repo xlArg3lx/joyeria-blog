@@ -1,45 +1,64 @@
 {
   "schemaVersion": 2,
   "dockerfileLines": [
-    "# Etapa de compilación con Node 20",
-    "FROM node:20-alpine AS builder",
-    "WORKDIR /app",
-    "COPY package*.json ./",
-    "RUN npm install --legacy-peer-deps",
-    "COPY . .",
-    "RUN npm run build",
-
-    "# Etapa final",
     "FROM php:8.2-apache",
 
-    "# Instalar dependencias de PHP con limpieza",
-    "RUN apt-get update && apt-get install -y --no-install-recommends libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip && apt-get clean && rm -rf /var/lib/apt/lists/*",
+    "# Instalar dependencias básicas y limpiar inmediatamente",
+    "RUN apt-get update && apt-get install -y --no-install-recommends \
+         libzip-dev zip unzip git \
+         && docker-php-ext-install pdo_mysql zip \
+         && apt-get clean \
+         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
 
+    "# Instalar Composer",
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
 
-    "RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf",
-    "RUN echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/memory-limit.ini",
-    "RUN echo 'max_execution_time=120' >> /usr/local/etc/php/conf.d/memory-limit.ini",
-    "RUN echo 'post_max_size=64M' >> /usr/local/etc/php/conf.d/memory-limit.ini",
-    "RUN echo 'upload_max_filesize=32M' >> /usr/local/etc/php/conf.d/memory-limit.ini",
+    "# Instalar Node.js de manera más eficiente",
+    "RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+         && apt-get install -y --no-install-recommends nodejs \
+         && apt-get clean \
+         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
+
+    "# Configuraciones de PHP",
+    "RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf \
+         && echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/memory-limit.ini \
+         && echo 'max_execution_time=120' >> /usr/local/etc/php/conf.d/memory-limit.ini",
 
     "WORKDIR /var/www/html",
+
+    "# Copiar archivos de dependencias primero para aprovechar la caché de Docker",
+    "COPY composer.json composer.lock package.json ./",
+
+    "# Instalar dependencias de PHP sin autoloader",
+    "RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist",
+
+    "# Instalar dependencias de Node con limpieza",
+    "RUN npm install --legacy-peer-deps && npm cache clean --force",
+
+    "# Copiar todo el proyecto",
     "COPY . .",
 
-    "# Copiar los assets compilados de la etapa de compilación",
-    "COPY --from=builder /app/public/build /var/www/html/public/build",
+    "# Finalizar instalación de Composer",
+    "RUN composer dump-autoload --optimize",
 
-    "# Configurar Git para confiar en este directorio",
+    "# Compilar assets",
+    "RUN npm run build",
+
+    "# Limpiar dependencias de desarrollo de Node",
+    "RUN rm -rf node_modules && rm -f package-lock.json",
+
+    "# Configurar Git",
     "RUN git config --global --add safe.directory /var/www/html",
 
-    "RUN composer install --no-dev --optimize-autoloader",
-
+    "# Configurar permisos",
     "RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache",
     "RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache",
 
+    "# Configurar Apache",
     "RUN a2enmod rewrite",
     "COPY .htaccess /var/www/html/.htaccess",
     "COPY ./public/.htaccess /var/www/html/public/.htaccess",
+
     "ENV APACHE_DOCUMENT_ROOT=/var/www/html/public",
     "RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf",
     "RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf",
