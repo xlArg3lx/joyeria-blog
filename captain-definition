@@ -45,7 +45,7 @@
 
     "# Resto de tu configuración...",
     "RUN a2enmod rewrite",
-    "COPY .htaccess /var/www/html/.htaccess",
+    "COPY public/.htaccess /var/www/html/.htaccess",
     "COPY docker-entrypoint.sh /usr/local/bin/",
     "RUN chmod +x /usr/local/bin/docker-entrypoint.sh",
     "ENTRYPOINT [\"docker-entrypoint.sh\"]",
