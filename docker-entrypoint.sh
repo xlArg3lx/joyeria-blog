@@ -1,23 +1,38 @@
 #!/bin/bash
 set -e
 
-# 1. CORRECCIÓN DE RUTAS APACHE (Error crítico detectado)
-sed -i 's|/var/ww/html|/var/www/html|g' /etc/apache2/sites-enabled/*.conf
+# 1. Corrección nuclear de rutas
+DOCUMENT_ROOT="/var/www/html/public"
+sed -i "s|/var/ww/html|${DOCUMENT_ROOT}|g" /etc/apache2/sites-enabled/*.conf
 
-# 2. CONFIGURACIÓN ESENCIAL DE APACHE
-echo "ServerName localhost" >> /etc/apache2/apache2.conf
-echo "<Directory /var/www/html/public>
-    Options FollowSymLinks
-    AllowOverride All
-    Require all granted
-</Directory>" >> /etc/apache2/apache2.conf
+# 2. Configuración Apache garantizada
+cat > /etc/apache2/sites-available/000-default.conf <<EOL
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot ${DOCUMENT_ROOT}
 
-# 3. PERMISOS Y ESTRUCTURA (Arregla el error 403)
+    <Directory ${DOCUMENT_ROOT}>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+        DirectoryIndex index.php
+
+        # Especificación explícita para archivos PHP
+        <FilesMatch \.php$>
+            SetHandler "proxy:unix:/var/run/php/php8.2-fpm.sock|fcgi://localhost"
+        </FilesMatch>
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOL
+
+# 3. Permisos atómicos
 chown -R www-data:www-data /var/www/html
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html -type f -exec chmod 644 {} \;
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-chmod 644 /var/www/html/public/.htaccess
+chmod 644 ${DOCUMENT_ROOT}/.htaccess
 
 # 4. OPTIMIZACIONES LARAVEL (Tu configuración original)
 php artisan config:clear
@@ -27,9 +42,13 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# 5. HABILITAR MÓDULOS APACHE
-a2enmod rewrite
-a2enmod headers
+# 4. Reinicio limpio
+a2enmod rewrite proxy_fcgi
+a2dismod mpm_event
+a2enmod mpm_prefork
+a2dissite 000-default.conf
+a2ensite 000-default.conf
 
-# 6. EJECUCIÓN PRINCIPAL
+# 5. Iniciar servicios
+service apache2 restart
 exec apache2-foreground
