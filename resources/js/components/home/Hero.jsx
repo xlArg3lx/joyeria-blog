@@ -1,10 +1,14 @@
-import React from 'react';
-import Button from '../common/Button';
+import React from "react";
+import Button from "../common/Button";
+import heroBg from "/public/images/hero-bg.jpg";
 
 function Hero() {
+    console.log("Ruta de imagen:", heroBg); // Debería mostrar la ruta correcta
     return (
-        <section className="h-screen bg-cover bg-center bg-no-repeat flex items-center relative text-white"
-                 style={{ backgroundImage: 'url(/images/hero-bg.jpg)' }}>
+        <div
+            className="h-screen bg-cover bg-center bg-no-repeat flex items-center relative text-white"
+            style={{ background: `url(${heroBg})` }}
+        >
             {/* Overlay para mejorar la legibilidad del texto */}
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
@@ -14,12 +18,25 @@ function Hero() {
                         Descubre la elegancia en cada detalle
                     </h1>
                     <p className="text-lg md:text-xl mb-10">
-                        Joyas únicas diseñadas con pasión, elegancia y los más finos materiales para momentos especiales
+                        Joyas únicas diseñadas con pasión, elegancia y los más
+                        finos materiales para momentos especiales
                     </p>
-                    <Button to="/colecciones">Ver colección</Button>
                 </div>
             </div>
-        </section>
+
+            <div
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    background:
+                         `url(${heroBg}) center/cover no-repeat`,
+                    zIndex: 0,
+                }}
+            />
+        </div>
     );
 }
 

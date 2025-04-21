@@ -29,8 +29,6 @@ function Header() {
                     <nav className="hidden md:block">
                         <ul className="flex space-x-8">
                             <li><Link to="/" className="text-lg text-gray-800 hover:text-gold-600 transition duration-300">Inicio</Link></li>
-                            <li><Link to="/colecciones" className="text-lg text-gray-800 hover:text-gold-600 transition duration-300">Colecciones</Link></li>
-                            <li><Link to="/blog" className="text-lg text-gray-800 hover:text-gold-600 transition duration-300">Blog</Link></li>
                             <li><Link to="/contacto" className="text-lg text-gray-800 hover:text-gold-600 transition duration-300">Contacto</Link></li>
                         </ul>
                     </nav>

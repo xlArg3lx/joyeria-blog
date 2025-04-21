@@ -8,7 +8,7 @@ function BlogSection() {
             id: 1,
             title: 'Tendencias en joyería para esta temporada',
             excerpt: 'Descubre las tendencias más destacadas en joyería para esta temporada y cómo incorporarlas a tu estilo...',
-            image: '/images/blog/tendencias.jpg',
+            image: '/images/blog/mezidi-zineb--hO96v1o5TY-unsplash.jpg',
             date: '15 Abril, 2025',
             category: 'Tendencias',
             slug: 'tendencias-joyeria-temporada'
@@ -17,7 +17,7 @@ function BlogSection() {
             id: 2,
             title: 'Cómo cuidar tus joyas para que luzcan siempre perfectas',
             excerpt: 'Guía completa con consejos prácticos para mantener tus joyas en perfecto estado y prolongar su vida útil...',
-            image: '/images/blog/cuidado-joyas.jpg',
+            image: '/images/blog/king-kong-HoBl6A2aZPA-unsplash.jpg',
             date: '10 Abril, 2025',
             category: 'Cuidados',
             slug: 'como-cuidar-joyas'
@@ -26,7 +26,7 @@ function BlogSection() {
             id: 3,
             title: 'La fascinante historia de los diamantes',
             excerpt: 'Un recorrido por la historia de estas piedras preciosas que han cautivado a la humanidad durante siglos...',
-            image: '/images/blog/historia-diamantes.jpg',
+            image: '/images/blog/sabrianna-XEyyCJKg4yI-unsplash.jpg',
             date: '5 Abril, 2025',
             category: 'Historia',
             slug: 'historia-diamantes'

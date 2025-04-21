@@ -15,12 +15,6 @@ function BlogPost({ post }) {
                 <div className="text-sm text-gray-500 mb-2">{date} | {category}</div>
                 <h3 className="text-xl font-normal text-gray-800 mb-2">{title}</h3>
                 <p className="text-gray-600 mb-4">{excerpt}</p>
-                <Link
-                    to={`/blog/${slug}`}
-                    className="text-gold-600 hover:text-gold-700 transition duration-300 text-sm"
-                >
-                    Leer más
-                </Link>
             </div>
         </div>
     );

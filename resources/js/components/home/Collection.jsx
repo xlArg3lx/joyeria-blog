@@ -8,7 +8,7 @@ function Collections() {
             id: 1,
             title: 'Colección Primavera',
             description: 'Piezas delicadas inspiradas en la frescura y los colores de la temporada.',
-            image: '/images/collections/primavera.jpg',
+            image: '/images/collections/divaris-shirichena-ZiLa8BLWBpY-unsplash.jpg',
             buttonText: 'Explorar',
             buttonLink: '/colecciones/primavera'
         },
@@ -16,7 +16,7 @@ function Collections() {
             id: 2,
             title: 'Colección Clásica',
             description: 'Joyas atemporales que nunca pasan de moda, para todos los días.',
-            image: '/images/collections/clasica.jpg',
+            image: '/images/collections/sheilabox-WwBw5g8tV7Y-unsplash.jpg',
             buttonText: 'Explorar',
             buttonLink: '/colecciones/clasica'
         },
@@ -24,7 +24,7 @@ function Collections() {
             id: 3,
             title: 'Colección Exclusiva',
             description: 'Piezas únicas y ediciones limitadas para ocasiones especiales.',
-            image: '/images/collections/exclusiva.jpg',
+            image: '/images/collections/sheilabox-s9ekJmapoPo-unsplash.jpg',
             buttonText: 'Explorar',
             buttonLink: '/colecciones/exclusiva'
         }
@@ -45,7 +45,6 @@ function Collections() {
                             <div className="p-6">
                                 <h3 className="text-xl font-normal text-gray-800 mb-2">{collection.title}</h3>
                                 <p className="text-gray-600 mb-4">{collection.description}</p>
-                                <Button to={collection.buttonLink}>{collection.buttonText}</Button>
                             </div>
                         </div>
                     ))}
