@@ -10,3 +10,7 @@ storage/*.key
 public/hot
 public/storage
 bootstrap/cache/*
+
+# Excepciones (incluir estos)
+!/public/.htaccess
+!/public/index.php
