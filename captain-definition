@@ -3,61 +3,44 @@
   "dockerfileLines": [
     "FROM php:8.2-apache",
 
-    "# Solución para errores GPG - Paso 1: Actualizar claves",
-    "RUN apt-get update -o Acquire::AllowInsecureRepositories=true && \\",
-    "    apt-get install -y --no-install-recommends ca-certificates gnupg && \\",
-    "    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9 6ED0E7B82643E131 && \\",
-    "    rm -rf /var/lib/apt/lists/*",
-
-    "# Paso 2: Actualización segura",
-    "RUN apt-get update --allow-releaseinfo-change && \\",
-    "    apt-get install -y \\",
+    "# Limpieza inicial para liberar espacio",
+    "RUN rm -rf /var/lib/apt/lists/* && \\",
+    "    apt-get clean && \\",
+    "    apt-get update -o Acquire::Check-Valid-Until=false && \\",
+    "    apt-get install -y --no-install-recommends \\",
+    "    ca-certificates \\",
     "    curl \\",
+    "    && rm -rf /var/lib/apt/lists/*",
+
+    "# Instalar Node.js sin GPG (método alternativo)",
+    "RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \\",
+    "    apt-get install -y nodejs && \\",
+    "    npm install -g npm@latest",
+
+    "# Instalar dependencias mínimas",
+    "RUN apt-get update && \\",
+    "    apt-get install -y --no-install-recommends \\",
     "    git \\",
     "    unzip \\",
-    "    zip \\",
-    "    libzip-dev",
-
-    "# Instalar Node.js (versión LTS)",
-    "RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \\",
-    "    apt-get install -y nodejs",
+    "    libzip-dev \\",
+    "    && docker-php-ext-install pdo_mysql zip \\",
+    "    && rm -rf /var/lib/apt/lists/*",
 
     "# Configuración PHP",
-    "RUN docker-php-ext-install pdo_mysql zip && \\",
-    "    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini",
+    "RUN echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini",
 
-    "# Configura Apache",
-    "RUN a2enmod rewrite && \\",
-    "    echo 'ServerName localhost' >> /etc/apache2/apache2.conf",
-
-    "# Prepara el entorno",
+    "# Construcción de la aplicación",
     "WORKDIR /var/www/html",
     "COPY . .",
+    "RUN composer install --no-dev --optimize-autoloader --no-interaction \\",
+    "    && npm install \\",
+    "    && npm run build",
 
-    "# Instala dependencias",
-    "RUN composer install --no-dev --optimize-autoloader --no-interaction && \\",
-    "    npm install && \\",
-    "    npm run build",
+    "# Permisos y limpieza final",
+    "RUN chown -R www-data:www-data storage bootstrap/cache \\",
+    "    && find /var/www/html -type d -exec chmod 755 {} \\; \\",
+    "    && find /var/www/html -type f -exec chmod 644 {} \\;",
 
-    "# Configura permisos",
-    "RUN chown -R www-data:www-data \\",
-    "    /var/www/html/storage \\",
-    "    /var/www/html/bootstrap/cache && \\",
-    "    chmod -R 775 \\",
-    "    /var/www/html/storage \\",
-    "    /var/www/html/bootstrap/cache",
-
-    "# Configura document root",
-    "ENV APACHE_DOCUMENT_ROOT=/var/www/html/public",
-    "RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \\",
-    "    sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf",
-
-    "# Entrypoint",
-    "COPY docker-entrypoint.sh /usr/local/bin/",
-    "RUN chmod +x /usr/local/bin/docker-entrypoint.sh",
-    "ENTRYPOINT [\"docker-entrypoint.sh\"]",
     "CMD [\"apache2-foreground\"]"
-
-
   ]
 }
