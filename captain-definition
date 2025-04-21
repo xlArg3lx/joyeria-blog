@@ -36,6 +36,9 @@
     "RUN npm install",
     "RUN npm run build",
 
+    "# Mover el manifest si está en .vite",
+    "RUN if [ -f \"public/build/.vite/manifest.json\" ]; then mv public/build/.vite/manifest.json public/build/; fi",
+
     "# Configurar permisos",
     "RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build",
     "RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build",
