@@ -1,15 +1,27 @@
 #!/bin/bash
 set -e
 
-# 1. Detener Apache si está corriendo (evita conflictos)
+# 1. Detener Apache completamente
 service apache2 stop || true
+pkill -9 apache2 || true
 
-# 2. Configuración esencial de Apache
-echo "ServerName localhost" >> /etc/apache2/apache2.conf
-echo "Listen 80" >> /etc/apache2/ports.conf
+# 2. Limpiar configuraciones previas
+rm -f /etc/apache2/sites-enabled/*.conf
+rm -f /etc/apache2/ports.conf
 
-# 3. Configuración del VirtualHost
-cat > /etc/apache2/sites-available/000-default.conf <<EOL
+# 3. Crear nuevo ports.conf limpio
+cat > /etc/apache2/ports.conf <<'EOL'
+Listen 80
+<IfModule ssl_module>
+    Listen 443
+</IfModule>
+<IfModule mod_gnutls.c>
+    Listen 443
+</IfModule>
+EOL
+
+# 4. Configuración del VirtualHost (mismo que antes)
+cat > /etc/apache2/sites-available/000-default.conf <<'EOL'
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/html/public
@@ -19,20 +31,15 @@ cat > /etc/apache2/sites-available/000-default.conf <<EOL
         AllowOverride All
         Require all granted
     </Directory>
-
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 EOL
 
-# 4. Habilitar módulos y sitio
-a2enmod rewrite
+# 5. Habilitar sitio y módulos
 a2ensite 000-default.conf
+a2enmod rewrite
 
-# 5. Permisos garantizados
-chown -R www-data:www-data /var/www/html
-chmod -R 755 /var/www/html
-chmod 644 /var/www/html/public/.htaccess
+# 6. Verificar configuración
+apache2ctl configtest || { echo "Error en configuración de Apache"; exit 1; }
 
-# 6. Iniciar Apache en primer plano
+# 7. Iniciar Apache
 exec apache2ctl -D FOREGROUND
