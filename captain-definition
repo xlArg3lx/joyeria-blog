@@ -1,22 +1,27 @@
 {
   "schemaVersion": 2,
   "dockerfileLines": [
-    "# Etapa de compilación",
-    "FROM node:18-alpine AS builder",
+    "# Etapa de compilación con Node 20",
+    "FROM node:20-alpine AS builder",
     "WORKDIR /app",
     "COPY package*.json ./",
-    "RUN npm install",
+    "RUN npm install --legacy-peer-deps",
     "COPY . .",
     "RUN npm run build",
 
     "# Etapa final",
     "FROM php:8.2-apache",
+
+    "# Instalar dependencias de PHP con limpieza",
     "RUN apt-get update && apt-get install -y --no-install-recommends libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip && apt-get clean && rm -rf /var/lib/apt/lists/*",
 
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
 
     "RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf",
     "RUN echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/memory-limit.ini",
+    "RUN echo 'max_execution_time=120' >> /usr/local/etc/php/conf.d/memory-limit.ini",
+    "RUN echo 'post_max_size=64M' >> /usr/local/etc/php/conf.d/memory-limit.ini",
+    "RUN echo 'upload_max_filesize=32M' >> /usr/local/etc/php/conf.d/memory-limit.ini",
 
     "WORKDIR /var/www/html",
     "COPY . .",
@@ -24,12 +29,17 @@
     "# Copiar los assets compilados de la etapa de compilación",
     "COPY --from=builder /app/public/build /var/www/html/public/build",
 
+    "# Configurar Git para confiar en este directorio",
+    "RUN git config --global --add safe.directory /var/www/html",
+
     "RUN composer install --no-dev --optimize-autoloader",
 
     "RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache",
     "RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache",
 
     "RUN a2enmod rewrite",
+    "COPY .htaccess /var/www/html/.htaccess",
+    "COPY ./public/.htaccess /var/www/html/public/.htaccess",
     "ENV APACHE_DOCUMENT_ROOT=/var/www/html/public",
     "RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf",
     "RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf",
