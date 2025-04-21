@@ -10,6 +10,23 @@ export default defineConfig({
         }),
         react(),
     ],
+    server: {
+        hmr: {
+            host: 'joyeria-elegance.pixflow.me',
+            protocol: 'wss' // Usar WebSocket seguro
+        }
+    },
+    build: {
+        outDir: 'public/build',
+        manifest: true,
+        rollupOptions: {
+            output: {
+                assetFileNames: 'assets/[name]-[hash][extname]',
+                entryFileNames: 'assets/[name]-[hash].js',
+            }
+        }
+    },
+    base: '/build/', // Ruta base relativa para producción
     optimizeDeps: {
         include: ['react', 'react-dom']
     },
