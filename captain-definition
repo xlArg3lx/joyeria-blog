@@ -2,15 +2,15 @@
   "schemaVersion": 2,
   "dockerfileLines": [
     "FROM php:8.2-apache",
-    "RUN apt-get update && apt-get install -y libzip-dev libpq-dev zip unzip git",
+    "RUN echo 'APT::Get::AllowUnauthenticated \"true\";' > /etc/apt/apt.conf.d/99allow-unauth",
+    "RUN apt-get update -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true || true",
+    "RUN apt-get install -y --allow-unauthenticated libzip-dev libpq-dev zip unzip git",
     "RUN docker-php-ext-install pdo_pgsql zip",
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
     "WORKDIR /var/www/html",
     "COPY . .",
-
     "# Configurar Git para confiar en este directorio",
     "RUN git config --global --add safe.directory /var/www/html",
-
     "RUN composer install --no-dev --optimize-autoloader",
     "RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache",
     "RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache",
