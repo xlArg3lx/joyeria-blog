@@ -2,9 +2,11 @@
   "schemaVersion": 2,
   "dockerfileLines": [
     "FROM php:8.2-apache",
-    "RUN apt-get update && apt-get install -y --no-install-recommends libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
+    "RUN echo 'Acquire::AllowInsecureRepositories \"true\";' > /etc/apt/apt.conf.d/99-allow-insecure && echo 'Acquire::AllowDowngradeToInsecureRepositories \"true\";' >> /etc/apt/apt.conf.d/99-allow-insecure",
+    "RUN apt-get update -o Acquire::AllowInsecureRepositories=true || true",
+    "RUN apt-get install -y --allow-unauthenticated --no-install-recommends libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
-    "RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y --no-install-recommends nodejs && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
+    "RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y --allow-unauthenticated --no-install-recommends nodejs && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*",
     "RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf && echo 'memory_limit=256M' > /usr/local/etc/php/conf.d/memory-limit.ini && echo 'max_execution_time=120' >> /usr/local/etc/php/conf.d/memory-limit.ini",
     "WORKDIR /var/www/html",
     "COPY composer.json composer.lock package.json ./",
