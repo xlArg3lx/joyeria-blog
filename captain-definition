@@ -2,11 +2,21 @@
   "schemaVersion": 2,
   "dockerfileLines": [
     "FROM php:8.2-apache",
-    "RUN apt-get update && apt-get install -y libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip",
 
-    "# Instalar Node.js y npm",
-    "RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -",
-    "RUN apt-get install -y nodejs",
+    "# Limpiar caché antes de empezar",
+    "RUN apt-get clean && rm -rf /var/lib/apt/lists/*",
+
+    "# Instalar dependencias básicas",
+    "RUN apt-get update && apt-get install -y --no-install-recommends libzip-dev zip unzip git && docker-php-ext-install pdo_mysql zip",
+
+    "# Limpiar caché entre instalaciones",
+    "RUN apt-get clean",
+
+    "# Instalar Node.js de manera más ligera",
+    "RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y --no-install-recommends nodejs",
+
+    "# Limpiar después de instalaciones",
+    "RUN apt-get clean && rm -rf /var/lib/apt/lists/*",
 
     "RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
 
