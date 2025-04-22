@@ -67,8 +67,14 @@ function ContactForm() {
     };
 
     return (
-        <div className="lg:w-3/5 bg-gray-50 p-8 rounded-lg shadow-md ">
-            <h3 className="text-2xl font-normal text-gray-800 mb-6">Envíanos un mensaje</h3>
+        <div className="lg:w-3/5 bg-white p-10 rounded-2xl shadow-lg border border-gray-100">
+            <h3 className="text-3xl font-semibold text-gray-900 mb-2">
+                Envíanos un mensaje
+            </h3>
+            <p className="text-gray-500 mb-8">
+                Nos encantaría saber de ti. Completa el formulario y te
+                responderemos lo antes posible.
+            </p>
 
             {status.info.msg && (
                 <div
@@ -109,16 +115,22 @@ function ContactForm() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4 ">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="group">
+                    <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                        Nombre completo
+                    </label>
                     <input
                         type="text"
                         id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400 "
-                        placeholder="Nombre completo"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400"
+                        placeholder="Juan Pérez"
                         required
                     />
                 </div>
@@ -137,7 +149,7 @@ function ContactForm() {
                         value={formData.email}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400"
-                        placeholder="Correo electrónico"
+                        placeholder="ejemplo@correo.com"
                         required
                     />
                 </div>
@@ -156,7 +168,7 @@ function ContactForm() {
                         value={formData.subject}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400"
-                        placeholder="Asunto"
+                        placeholder="¿En qué podemos ayudarte?"
                         required
                     />
                 </div>
@@ -174,11 +186,10 @@ function ContactForm() {
                         value={formData.message}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400 min-h-[150px] resize-y"
-                        placeholder="Tu mensaje"
+                        placeholder="Escribe tu mensaje aquí..."
                         required
                     ></textarea>
                 </div>
-
                 <Button
                     variant="secondary"
                     type="submit"
