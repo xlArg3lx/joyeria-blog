@@ -59,7 +59,7 @@ function ContactForm() {
     };
 
     return (
-        <div className="lg:w-3/5 bg-gray-50 p-8 rounded-lg shadow-md">
+        <div className="lg:w-3/5 bg-gray-50 p-8 rounded-lg shadow-md ">
             <h3 className="text-2xl font-normal text-gray-800 mb-6">Envíanos un mensaje</h3>
 
             {status.info.msg && (
@@ -69,13 +69,13 @@ function ContactForm() {
             )}
 
             <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <input
+                <div className="mb-4 ">
+                    <input 
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="form-control"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400 "
                         placeholder="Nombre completo"
                         required
                     />
@@ -86,7 +86,7 @@ function ContactForm() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="form-control"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400"
                         placeholder="Correo electrónico"
                         required
                     />
@@ -97,7 +97,7 @@ function ContactForm() {
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
-                        className="form-control"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400"
                         placeholder="Asunto"
                         required
                     />
@@ -107,7 +107,7 @@ function ContactForm() {
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
-                        className="form-control h-36 resize-y"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gold-500 focus:border-transparent transition duration-200 ease-in-out placeholder-gray-400 min-h-[150px] resize-y"
                         placeholder="Tu mensaje"
                         required
                     ></textarea>
