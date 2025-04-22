@@ -11,12 +11,6 @@ export default defineConfig({
         }),
         react(),
     ],
-    server: {
-        hmr: {
-            host: "joyeria-elegance.pixflow.me",
-            protocol: "wss",
-        },
-    },
     optimizeDeps: {
         include: ["react", "react-dom"],
     },
